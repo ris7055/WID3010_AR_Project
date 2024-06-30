@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
-
 
 import rospy
 import torch
@@ -13,10 +11,12 @@ from PIL import Image as PILImage
 import sys
 import os
 
-#Add yolov5 repo to the python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__),'yolov5'))
-# Initialize the model
-model = torch.hub.load('yolov5', 'custom', path='/home/raffaul/catkin_ws/src/fruit_detection/scripts/last.pt', source='local')  # Update the path to your trained model
+# Add YOLOv5 repo to the Python path
+yolov5_path = os.path.join(os.path.dirname(__file__), 'yolov5')
+sys.path.insert(0, yolov5_path)
+
+# Initialize the model with the correct path to 'last.pt'
+model = torch.hub.load(yolov5_path, 'custom', path=os.path.join(os.path.dirname(__file__), 'last.pt'), source='local')
 
 # Initialize the speech synthesis engine
 engine = pyttsx3.init()
@@ -27,7 +27,7 @@ bridge = CvBridge()
 # Define the function for fruit detection
 def detect_fruits(cv_image):
     # Convert the OpenCV image to PIL format
-    img = Image.fromarray(cv_image)
+    img = PILImage.fromarray(cv_image)
     
     # Perform inference
     results = model(img)
@@ -84,4 +84,3 @@ if __name__ == "__main__":
     fruit_pub = rospy.Publisher('/detected_fruits', String, queue_size=10)
 
     rospy.spin()
-
